@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="description" content="Horario escolar Liceo Bilingüe de Belén - Décimo Nivel 2026 Sección 10-1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Mi Horario - Liceo Bilingüe de Belén</title>
+</head>
+
+<body>
+    <!-- Header -->
+    <header id="app-header">
+        <div class="header-top">
+            <div class="school-badge">
+                <span class="badge-icon">🎓</span>
+                <div class="school-info">
+                    <h1>Mi Horario</h1>
+                    <p class="school-subtitle">Liceo Bilingüe de Belén · 10-1</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="clock-container">
+                    <span id="current-time" class="clock">--:--:--</span>
+                    <span id="current-day" class="day-label">---</span>
+                </div>
+                <button id="settings-btn" class="settings-btn" onclick="toggleSettings()"
+                    aria-label="Configuración">🔧</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="settings-panel" style="display:none;">
+        <div class="settings-panel-inner">
+            <h3 class="settings-title">🎨 Tema</h3>
+            <div id="color-palette" class="color-palette"></div>
+        </div>
+    </div>
+
+    <!-- Weather Widget -->
+    <div id="weather-widget" class="weather-widget">
+        <div class="weather-inner">
+            <div class="weather-main">
+                <span id="weather-icon" class="weather-icon">🌤️</span>
+                <div class="weather-temp-group">
+                    <span id="weather-temp" class="weather-temp">--°</span>
+                    <span id="weather-desc" class="weather-desc">Cargando...</span>
+                </div>
+            </div>
+            <div class="weather-details">
+                <span id="weather-feels" class="weather-detail">🌡️ S.T. --°</span>
+                <span id="weather-humidity" class="weather-detail">💧 --%</span>
+                <span id="weather-wind" class="weather-detail">💨 -- km/h</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Year Progress Bar -->
+    <div id="year-progress" class="year-progress-bar">
+        <div class="year-progress-info">
+            <span class="year-progress-label">Progreso del año</span>
+            <span id="year-progress-pct" class="year-progress-pct">0%</span>
+        </div>
+        <div class="year-progress-track">
+            <div id="year-progress-fill" class="year-progress-fill" style="width:0%"></div>
+        </div>
+        <span id="year-progress-days" class="year-progress-days"></span>
+    </div>
+
+    <!-- Current Class Hero -->
+    <section id="current-class-hero" class="hero-card">
+        <div class="hero-content">
+            <div class="hero-status" id="hero-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Cargando...</span>
+            </div>
+            <h2 id="hero-class-name" class="hero-title">---</h2>
+            <p id="hero-teacher" class="hero-teacher">---</p>
+            <div id="hero-countdown" class="countdown-container">
+                <div class="countdown-ring">
+                    <svg viewBox="0 0 120 120" class="countdown-svg">
+                        <circle cx="60" cy="60" r="54" class="countdown-track"></circle>
+                        <circle cx="60" cy="60" r="54" class="countdown-progress" id="countdown-circle"></circle>
+                    </svg>
+                    <div class="countdown-value">
+                        <span id="countdown-minutes" class="countdown-num">--</span>
+                        <span class="countdown-label">min</span>
+                    </div>
+                </div>
+                <div class="countdown-details">
+                    <div class="detail-row">
+                        <span class="detail-icon">⏱️</span>
+                        <span id="hero-time-range" class="detail-text">--:-- - --:--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-icon">📍</span>
+                        <span id="hero-lesson-num" class="detail-text">Lección --</span>
+                    </div>
+                    <div class="detail-row next-up" id="next-class-row">
+                        <span class="detail-icon">⏭️</span>
+                        <span id="hero-next" class="detail-text">Siguiente: ---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Day Tabs -->
+    <nav id="day-tabs" class="day-tabs">
+        <button class="day-tab" data-day="1">Lun</button>
+        <button class="day-tab" data-day="2">Mar</button>
+        <button class="day-tab" data-day="3">Mié</button>
+        <button class="day-tab" data-day="4">Jue</button>
+        <button class="day-tab" data-day="5">Vie</button>
+    </nav>
+
+    <!-- Motivational Phrase (English classes) -->
+    <div id="motivation-banner" class="motivation-banner" style="display:none;">
+        <span id="motivation-text" class="motivation-text"></span>
+    </div>
+
+    <!-- Schedule List -->
+    <section id="schedule-section">
+        <div id="schedule-list" class="schedule-list"></div>
+        <!-- Class Counter -->
+        <div id="class-counter" class="class-counter">
+            <div class="class-counter-header" onclick="toggleClassCounter()">
+                <span>📊 Lecciones por semana</span>
+                <span id="counter-toggle" class="counter-toggle">▼</span>
+            </div>
+            <div id="class-counter-body" class="class-counter-body" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- All Notes Section -->
+    <section id="all-notes-section" style="display:none;">
+        <div id="all-notes-list" class="all-notes-list"></div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events-section" style="display:none;">
+        <div id="events-list" class="events-list"></div>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav id="bottom-nav" class="bottom-nav">
+        <button class="bottom-nav-btn active" id="nav-schedule" onclick="switchView('schedule')">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Horario</span>
+        </button>
+        <button class="bottom-nav-btn" id="nav-events" onclick="switchView('events')">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">Eventos</span>
+        </button>
+        <button class="bottom-nav-btn" id="nav-notes" onclick="switchView('notes')">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">Mis Notas</span>
+        </button>
+    </nav>
+
+    <!-- Notes Modal -->
+    <div id="notes-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Notas</h3>
+                <button id="modal-close" class="modal-close-btn" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="notes-list" class="notes-list"></div>
+                <div class="note-input-group">
+                    <input type="text" id="note-input" placeholder="Escribe una nota..." maxlength="200"
+                        autocomplete="off">
+                    <button id="add-note-btn" class="add-note-btn" aria-label="Agregar nota">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+    </script>
+</body>
+
+</html>
